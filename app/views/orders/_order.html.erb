@@ -8,7 +8,9 @@
   </div>
   <p class="card-text">
     <strong>📅 Order Date:</strong><br>
-    <%= order.created_at.localtime.strftime('%A, %d %B %Y at %H:%M WIB') %>
+    <span class="order-date" data-utc-time="<%= order.created_at.utc.iso8601 %>">
+      <%= order.created_at.localtime.strftime('%A, %d %B %Y at %H:%M WIB') %>
+    </span>
   </p>
   <p class="card-text">
     <strong>📋 Order Details:</strong><br>
