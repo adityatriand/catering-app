@@ -1,6 +1,17 @@
-<h1>Editing order</h1>
-<div class="mt-3">
-  <%= link_to "Show this order", @order, {class: "btn btn-primary"} %>
+<% if alert %>
+  <div class="alert alert-danger"><%= alert %></div>
+<% end %>
+<% if notice %>
+  <p style="color: green"><%= notice %></p>
+<% end %>
+<div class="page-header mb-4">
+  <div class="page-header-content">
+    <h1 class="page-title">Edit Order</h1>
+    <div class="page-actions">
+      <%= link_to "← Back to Orders", orders_path, {class: "btn btn-secondary"} %>
+      <%= link_to "View Order", @order, {class: "btn btn-primary"} %>
+    </div>
+  </div>
 </div>
 <div class="form">
   <%= render "form", order: @order %>

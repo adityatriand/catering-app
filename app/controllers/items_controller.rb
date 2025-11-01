@@ -78,10 +78,28 @@ class ItemsController < ApplicationController
 
   # DELETE /items/1 or /items/1.json
   def destroy
+    # Check if item has any order details
+    order_details = OrderDetail.where(item_id: params[:id])
     
+    if order_details.any?
+      # Restore stock for NEW or PAID orders that include this item
+      order_details.each do |detail|
+        order = Order.find_by(id: detail.order_id)
+        # Only restore stock if order status is NEW (0) or PAID (1)
+        if order && (order.status_order == 0 || order.status_order == 1)
+          @item.increase_stock(detail.quantity)
+        end
+      end
+      
+      # Delete all order details for this item
+      order_details.destroy_all
+    end
+    
+    # Delete item categories
     item_category = ItemCategory.where(item_id: params[:id])
     item_category.destroy_all
 
+    # Delete the item
     @item.destroy
 
     respond_to do |format|
@@ -102,7 +120,7 @@ class ItemsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def item_params
-      params.require(:item).permit(:name, :description, :price)
+      params.require(:item).permit(:name, :description, :price, :stock)
     end
 
     def render_404

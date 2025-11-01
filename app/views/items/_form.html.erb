@@ -20,62 +20,95 @@
     </div>
     <div class="form-group">
       <%= form.label :price %>
-      <%= form.number_field :price, {class: "form-control", placeholder: "Insert Item Price", required: true}  %>
+      <%= form.number_field :price, {class: "form-control", placeholder: "Insert Item Price", required: true, step: 0.01}  %>
     </div>
-    <div>
-      <p class="mt-3 mb-0">Category</p>
-      <% if @current_categories %>
-        <div class="row">
-          <% @current_categories.each do |category| %>
-            <div class="col-sm-4 mt-3">
-              <input class="form-control" type="text" value="<%= category.name %>" disabled>
-            </div>
-          <% end %>
-        </div>
-        <p class="m-t-10 fw-bold" style="color:red;">Delete Category</p>
-        <small class="text-muted">checklist category you want to delete</small>
-        <div class="mt-2">
-          <% @current_categories.each do |category| %>
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" id="<%= category.name %>" name="category[]" value="<%= category.id %>">
-              <label class="form-check-label" for="<%= category.name %>">
+    <div class="form-group">
+      <%= form.label :stock %>
+      <%= form.number_field :stock, {class: "form-control", placeholder: "Insert Stock Quantity", required: true, min: 0}  %>
+      <small class="text-muted">Initial stock quantity for this item</small>
+    </div>
+    <div class="category-section mt-4">
+      <label class="form-label fw-bold mb-3">Categories</label>
+      
+      <!-- Current Categories Display -->
+      <% if @current_categories && @current_categories.any? %>
+        <div class="current-categories mb-4">
+          <p class="mb-2 text-muted small">Current Categories:</p>
+          <div class="d-flex flex-wrap gap-2 mb-3">
+            <% @current_categories.each do |category| %>
+              <span class="badge bg-primary px-3 py-2" style="font-size: 0.9rem;">
                 <%= category.name %>
-              </label>
+              </span>
+            <% end %>
+          </div>
+          
+          <!-- Remove Categories Section -->
+          <div class="remove-categories-section p-3 bg-light rounded border">
+            <p class="mb-2 fw-bold text-danger">
+              🗑️ Remove Categories
+            </p>
+            <small class="text-muted d-block mb-2">Check the categories you want to remove from this item:</small>
+            <div class="d-flex flex-column gap-2">
+              <% @current_categories.each do |category| %>
+                <div class="d-flex align-items-center gap-2">
+                  <input class="form-check-input" type="checkbox" id="remove_<%= category.id %>" name="category[]" value="<%= category.id %>" style="width: 20px; height: 20px; margin: 0;">
+                  <label class="form-check-label bg-white rounded px-3 py-2 flex-grow-1" for="remove_<%= category.id %>" style="border: 1px solid #e9ecef; cursor: pointer;">
+                    <strong><%= category.name %></strong>
+                  </label>
+                </div>
+              <% end %>
             </div>
-          <% end %>
+          </div>
         </div>
       <% end %>
-      <% if !@notyet_categories %>
-        <small class="text-muted">checklist category related to item</small>
-        <div class="mt-2">
-          <% @categories.each do |category| %>
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" id="<%= category.name %>" name="category[]" value="<%= category.id %>">
-              <label class="form-check-label" for="<%= category.name %>">
-                <%= category.name %>
-              </label>
+      
+      <!-- Add Categories Section -->
+      <div class="add-categories-section">
+        <% if @current_categories && @notyet_categories && !@notyet_categories.empty? %>
+          <div class="p-3 bg-light rounded border mt-3">
+            <p class="mb-2 fw-bold text-success">
+              ➕ Add Categories
+            </p>
+            <small class="text-muted d-block mb-2">Check the categories you want to add to this item:</small>
+            <div class="d-flex flex-column gap-2">
+              <% @notyet_categories.each do |id, name| %>
+                <div class="d-flex align-items-center gap-2">
+                  <input class="form-check-input" type="checkbox" id="add_<%= id %>" name="category[]" value="<%= id %>" style="width: 20px; height: 20px; margin: 0;">
+                  <label class="form-check-label bg-white rounded px-3 py-2 flex-grow-1" for="add_<%= id %>" style="border: 1px solid #e9ecef; cursor: pointer;">
+                    <strong><%= name %></strong>
+                  </label>
+                </div>
+              <% end %>
             </div>
-          <% end %>
-        </div>
-      <% elsif !@notyet_categories.empty? %>
-        <p class="m-t-10 fw-bold" style="color:green;">Add Category</p>
-        <small class="text-muted">checklist category you want to add</small>
-        <div class="mt-2">
-          <% @notyet_categories.each do |id, name| %>
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" id="<%= name %>" name="category[]" value="<%= id %>">
-              <label class="form-check-label" for="<%= name %>">
-                <%= name %>
-              </label>
+          </div>
+        <% elsif !@current_categories %>
+          <div class="p-3 bg-light rounded border">
+            <p class="mb-2 fw-bold text-success">
+              ➕ Select Categories
+            </p>
+            <small class="text-muted d-block mb-2">Check the categories for this item:</small>
+            <div class="d-flex flex-column gap-2">
+              <% @categories.each do |category| %>
+                <div class="d-flex align-items-center gap-2">
+                  <input class="form-check-input" type="checkbox" id="new_<%= category.id %>" name="category[]" value="<%= category.id %>" style="width: 20px; height: 20px; margin: 0;">
+                  <label class="form-check-label bg-white rounded px-3 py-2 flex-grow-1" for="new_<%= category.id %>" style="border: 1px solid #e9ecef; cursor: pointer;">
+                    <strong><%= category.name %></strong>
+                  </label>
+                </div>
+              <% end %>
             </div>
-          <% end %>
-        </div>
-      <% end %>
-      <%= link_to "Create New Category", new_category_path, {class: "btn btn-info text-uppercase mt-3", style: "font-size:10px;"} %>
+          </div>
+        <% end %>
+      </div>
+      
+      <!-- Create New Category Link -->
+      <div class="mt-3">
+        <%= link_to "➕ Create New Category", new_category_path, {class: "btn btn-outline-info btn-sm"} %>
+      </div>
     </div>
-    <div class="mt-4">
+    <div class="mt-4 d-flex flex-column flex-sm-row gap-2">
       <%= form.submit 'Save', :class => 'btn btn-success'%>
-      <%= link_to "Back to items", items_path, {class: "btn btn-secondary ms-2"} %>
+      <%= link_to "Back to items", items_path, {class: "btn btn-secondary"} %>
     </div>
   <% end %>
 <% end %>

@@ -1,18 +1,45 @@
 <p style="color: green"><%= notice %></p>
-<h1>List Orders</h1>
-<%= @order_times %>
-<%= @current_times %>
-<div class="mt-3">
-  <%= link_to "Dashboard", '/',  {class: "btn btn-secondary"} %>
-  <%= link_to "New order", new_order_path,  {class: "btn btn-success"} %>
+<div class="page-header mb-4">
+  <div class="page-header-content">
+    <h1 class="page-title">Order Management</h1>
+    <div class="page-actions">
+      <%= link_to "🏠 Home", '/',  {class: "btn btn-secondary"} %>
+      <%= link_to "+ New Order", new_order_path,  {class: "btn btn-success"} %>
+    </div>
+  </div>
 </div>
-<h4 class="mt-3">Daily Report</h4>
-<div class="mt-3">
-  <%= link_to "Show All", orders_path,  {class: "btn btn-cus"} %>
-  <%= link_to "Show Order Today", "/orders?today=#{DateTime.current.to_date}",  {class: "btn btn-cus"} %>
-  <a class="btn btn-cus" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#filterEmail">Filter With Email</a>
-  <a class="btn btn-cus" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#filterPrice">Filter With Total Price</a>
-  <a class="btn btn-cus" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#filterDate">Filter With Date</a>
+<h4 class="mt-4 mb-3">Daily Report & Filters</h4>
+<div class="filter-buttons-wrapper my-3">
+  <!-- Quick Filters - Always Visible -->
+  <div class="row g-2 mb-3">
+    <div class="col-6 col-md-4 col-lg-auto">
+      <%= link_to "Show All", orders_path,  {class: "btn btn-cus w-100"} %>
+    </div>
+    <div class="col-6 col-md-4 col-lg-auto">
+      <%= link_to "Show Order Today", "/orders?today=#{DateTime.current.to_date}",  {class: "btn btn-cus w-100"} %>
+    </div>
+    <!-- Advanced Filters Button - Mobile Only -->
+    <div class="col-12 d-md-none">
+      <button class="btn btn-outline-secondary w-100" type="button" data-bs-toggle="collapse" data-bs-target="#advancedFilters" aria-expanded="false" aria-controls="advancedFilters">
+        🔍 Advanced Filters
+      </button>
+    </div>
+  </div>
+  
+  <!-- Advanced Filters - Collapsible on Mobile, Always Visible on Desktop -->
+  <div class="collapse d-md-block" id="advancedFilters">
+    <div class="row g-2">
+      <div class="col-12 col-md-4 col-lg-auto">
+        <a class="btn btn-cus w-100" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#filterEmail">📧 Filter By Email</a>
+      </div>
+      <div class="col-12 col-md-4 col-lg-auto">
+        <a class="btn btn-cus w-100" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#filterPrice">💰 Filter By Price</a>
+      </div>
+      <div class="col-12 col-md-4 col-lg-auto">
+        <a class="btn btn-cus w-100" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#filterDate">📅 Filter By Date</a>
+      </div>
+    </div>
+  </div>
   <div class="modal fade" id="filterEmail" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content bg-secondary">
@@ -83,22 +110,30 @@
     </div>
   </div>
 </div>
-<div id="orders">
-  <div class="row">
-    <% @orders.each do |order| %>
-      <div class="col-sm-4 mt-5">
-        <div class="card">
-          <div class="card-header">
-            Email Customer : <%= order.email %>
-          </div>
-          <div class="card-body">
-            <%= render order %>
-          </div>
-          <div class="card-footer text-end">
-            <%= link_to "Show this order", order,  {class: "btn card-button"} %>
+<% if @orders.any? %>
+  <div id="orders">
+    <div class="row">
+      <% @orders.each do |order| %>
+        <div class="col-12 col-sm-6 col-md-4 mb-4">
+          <div class="card h-100">
+            <div class="card-header">
+              <strong>📧 <%= order.email %></strong>
+            </div>
+            <div class="card-body d-flex flex-column">
+              <%= render order %>
+              <div class="mt-auto pt-3">
+                <%= link_to "View Details", order,  {class: "btn card-button w-100"} %>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    <% end %>
+      <% end %>
+    </div>
   </div>
-</div>
+<% else %>
+  <div class="alert alert-info text-center mt-4">
+    <h4>No orders found</h4>
+    <p>Start by creating your first order!</p>
+    <%= link_to "Create First Order", new_order_path, {class: "btn btn-success"} %>
+  </div>
+<% end %>

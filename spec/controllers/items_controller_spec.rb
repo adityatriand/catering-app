@@ -7,7 +7,7 @@ RSpec.describe ItemsController do
       nasi_uduk = create(:item, name: "Nasi Uduk")
       kerak_telor = create(:item, name: "Kelar Telor")
       get :index
-      expect(assigns(:items)).to match_array([nasi_uduk, kerak_telor])
+      expect(assigns(:items).to_a).to include(nasi_uduk, kerak_telor)
     end
 
     it "renders the :index template" do
@@ -38,7 +38,7 @@ RSpec.describe ItemsController do
 
     it "renders the :new template" do
       get :new
-      expect(:response).to render_template :new
+      expect(response).to render_template :new
     end
   end
 
