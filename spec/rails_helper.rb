@@ -39,6 +39,23 @@ RSpec.configure do |config|
   # instead of true.
   config.use_transactional_fixtures = true
 
+  # Clean up seeded data before test suite runs
+  config.before(:suite) do
+    # Only clean if we're in test environment and database exists
+    if Rails.env.test?
+      begin
+        Category.delete_all
+        Item.delete_all
+        Order.delete_all
+        OrderDetail.delete_all
+        ItemCategory.delete_all
+      rescue => e
+        # Database might not be set up yet
+        puts "Warning: Could not clean test database: #{e.message}"
+      end
+    end
+  end
+
   # You can uncomment this line to turn off ActiveRecord support entirely.
   # config.use_active_record = false
 

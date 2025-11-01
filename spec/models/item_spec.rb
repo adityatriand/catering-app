@@ -5,13 +5,14 @@ RSpec.describe Item, type: :model do
     Item.new(
       name: 'Nasi Uduk',
       description: 'Betawi style steamed rice cooked in coconut milk. Delicious!',
-      price: 15000.0
+      price: 15000.0,
+      stock: 50
     )
   }
 
   context 'validation for all field' do
     
-    it 'is valid with a name, a description, and a price' do
+    it 'is valid with a name, a description, a price, and stock' do
       expect(item).to be_valid
     end
 
@@ -29,13 +30,15 @@ RSpec.describe Item, type: :model do
       item1 = Item.create(
         name: "Nasi Uduk",
         description: "Betawi style steamed rice cooked in coconut milk. Delicious!",
-        price: 10000.0
+        price: 10000.0,
+        stock: 50
       )
       
       item2 = Item.new(
         name: "Nasi Uduk",
         description: "Just with a different description.",
-        price: 10000.0
+        price: 10000.0,
+        stock: 30
       )
   
       item2.valid?
@@ -53,7 +56,7 @@ RSpec.describe Item, type: :model do
       expect(item.errors[:description]).to include("can't be blank")
     end
 
-    it 'is invalid if description more than 150 characrter' do
+    it 'is invalid if description more than 150 character' do
       item.description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur ante magna, rutrum in euismod non, porta et elit. Sed ac quam lorem. Duis quis sed Lorem."
       item.valid?
       expect(item.errors[:description]).to include("150 characters is the maximum allowed")
@@ -77,5 +80,98 @@ RSpec.describe Item, type: :model do
     
   end
 
+  context 'validation for stock field' do
+    
+    it 'is invalid without stock' do
+      item.stock = nil
+      item.valid?
+      expect(item.errors[:stock]).to include("can't be blank")
+    end
+
+    it 'is invalid if stock is negative' do
+      item.stock = -1
+      item.valid?
+      expect(item.errors[:stock]).to include("must be greater than or equal to 0")
+    end
+
+    it 'is valid with stock of 0' do
+      item.stock = 0
+      expect(item).to be_valid
+    end
+    
+  end
+
+  context 'stock management methods' do
+    
+    describe '#in_stock?' do
+      it 'returns true when stock is greater than 0' do
+        item.stock = 10
+        expect(item.in_stock?).to be true
+      end
+
+      it 'returns false when stock is 0' do
+        item.stock = 0
+        expect(item.in_stock?).to be false
+      end
+    end
+
+    describe '#has_stock?' do
+      before do
+        item.stock = 50
+        item.save
+      end
+
+      it 'returns true when requested quantity is available' do
+        expect(item.has_stock?(30)).to be true
+      end
+
+      it 'returns true when requested quantity equals stock' do
+        expect(item.has_stock?(50)).to be true
+      end
+
+      it 'returns false when requested quantity exceeds stock' do
+        expect(item.has_stock?(51)).to be false
+      end
+    end
+
+    describe '#decrease_stock' do
+      before do
+        item.stock = 50
+        item.save
+      end
+
+      it 'decreases stock by the specified quantity' do
+        item.decrease_stock(10)
+        item.reload
+        expect(item.stock).to eq(40)
+      end
+
+      it 'saves the item after decreasing stock' do
+        item.decrease_stock(5)
+        item.reload
+        expect(item.stock).to eq(45)
+      end
+    end
+
+    describe '#increase_stock' do
+      before do
+        item.stock = 50
+        item.save
+      end
+
+      it 'increases stock by the specified quantity' do
+        item.increase_stock(10)
+        item.reload
+        expect(item.stock).to eq(60)
+      end
+
+      it 'saves the item after increasing stock' do
+        item.increase_stock(5)
+        item.reload
+        expect(item.stock).to eq(55)
+      end
+    end
+    
+  end
 
 end

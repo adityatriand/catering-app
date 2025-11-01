@@ -281,14 +281,51 @@ docker-compose exec web rails db:migrate
 docker-compose exec web rails db:seed
 ```
 
-**Run tests:**
+**Run all tests:**
 ```bash
 docker-compose exec web bundle exec rspec
+```
+
+**Run specific test file:**
+```bash
+docker-compose exec web bundle exec rspec spec/models/item_spec.rb
+```
+
+**Run specific test context:**
+```bash
+docker-compose exec web bundle exec rspec spec/models/item_spec.rb:12
+```
+
+**Run tests with documentation format:**
+```bash
+docker-compose exec web bundle exec rspec --format documentation
+```
+
+**Run tests for a specific model or controller:**
+```bash
+docker-compose exec web bundle exec rspec spec/models/
+docker-compose exec web bundle exec rspec spec/controllers/
+```
+
+**Set up test database (first time only):**
+```bash
+docker-compose exec web bundle exec rails db:test:prepare
+```
+
+**Run tests in watch mode (if guard is installed):**
+```bash
+docker-compose exec web bundle exec guard
 ```
 
 **Access the container shell:**
 ```bash
 docker-compose exec web bash
+```
+
+**Run tests from within container shell:**
+Once inside the container, you can run tests normally:
+```bash
+bundle exec rspec
 ```
 
 ### Docker Configuration Details
@@ -305,13 +342,74 @@ The database data is persisted in Docker volumes, so your data remains intact be
 The application uses RSpec for testing. To run the test suite:
 
 **Without Docker:**
+
+First, make sure your test database is set up:
+```bash
+rails db:test:prepare
+```
+
+Then run the tests:
 ```bash
 bundle exec rspec
 ```
 
 **With Docker:**
+
+The easiest way is to run tests in an already running container:
 ```bash
+# Make sure containers are running first
+docker-compose up -d
+
+# Then run tests
 docker-compose exec web bundle exec rspec
+```
+
+**Running tests without starting the server:**
+
+If you only want to run tests without starting the Rails server, you can use:
+```bash
+# This command will start the container, set up the database, run tests, and stop
+docker-compose run --rm web bundle exec rspec
+```
+
+The `--rm` flag ensures the container is removed after the command completes.
+
+**First-time test setup with Docker:**
+
+If this is your first time running tests, you may need to prepare the test database:
+```bash
+docker-compose exec web bundle exec rails db:test:prepare
+```
+
+Or if containers aren't running:
+```bash
+docker-compose run --rm web bundle exec rails db:test:prepare
+```
+
+**Running specific tests:**
+
+You can run specific test files or contexts:
+```bash
+# Run a specific file
+docker-compose exec web bundle exec rspec spec/models/item_spec.rb
+
+# Run tests matching a pattern
+docker-compose exec web bundle exec rspec spec/models/
+
+# Run a specific line
+docker-compose exec web bundle exec rspec spec/models/item_spec.rb:104
+```
+
+**Test output formats:**
+
+For more readable output:
+```bash
+docker-compose exec web bundle exec rspec --format documentation
+```
+
+For CI/automated environments:
+```bash
+docker-compose exec web bundle exec rspec --format progress
 ```
 
 ## Usage
