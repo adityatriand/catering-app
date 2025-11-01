@@ -1,12 +1,53 @@
 <div id="<%= dom_id item %>">
-  <h5 class="card-title mb-3">Rp.<%= item.price %> / portion</h5>
-  <p class="card-text">
-    Category : 
-    <% if item.category.nil? %>
-      -
-    <% else %>
-      <%= item.category %>
-    <% end %>
-  </p>
-  <p class="card-text">Description : <%= item.description %></p>
+  <!-- Categories and Stock Section -->
+  <div class="item-meta-section mb-4">
+    <div class="categories-display mb-3">
+      <p class="text-muted small mb-2 fw-bold">Categories:</p>
+      <div class="d-flex flex-wrap gap-2">
+        <% if item.category.present? %>
+          <% categories = item.category.to_s.split(',').map(&:strip) %>
+          <% categories.each do |cat| %>
+            <span class="badge bg-primary px-3 py-2" style="font-size: 0.95rem;">
+              <%= cat %>
+            </span>
+          <% end %>
+        <% else %>
+          <span class="badge bg-secondary px-3 py-2" style="font-size: 0.95rem;">
+            Uncategorized
+          </span>
+        <% end %>
+      </div>
+    </div>
+    
+    <div class="stock-display">
+      <p class="text-muted small mb-2 fw-bold">Stock Status:</p>
+      <span class="badge <%= item.stock.to_i > 0 ? 'bg-success' : 'bg-danger' %> text-white px-3 py-2" style="font-size: 0.95rem;">
+        <%= item.stock.to_i > 0 ? '✅ In Stock' : '❌ Out of Stock' %> - <%= item.stock.to_i %> available
+      </span>
+      <% if item.stock.to_i > 0 && item.stock.to_i < 5 %>
+        <span class="badge bg-warning text-dark px-3 py-2 ms-2" style="font-size: 0.95rem;">
+          ⚠️ Low Stock
+        </span>
+      <% end %>
+    </div>
+  </div>
+  
+  <!-- Price Display -->
+  <div class="price-display mb-4 pb-3 border-bottom">
+    <p class="text-muted small mb-2 fw-bold">Price:</p>
+    <div class="d-flex align-items-baseline">
+      <h4 class="mb-0" style="color: var(--primary-color); font-weight: 700; font-size: 1.75rem;">
+        Rp <%= number_with_delimiter(item.price.to_i) %>
+      </h4>
+      <span class="text-muted ms-2" style="font-size: 1rem;">/ portion</span>
+    </div>
+  </div>
+  
+  <!-- Description -->
+  <div class="description-section">
+    <p class="text-muted small mb-2 fw-bold">Description:</p>
+    <p class="card-text" style="font-size: 1rem; line-height: 1.6; color: var(--dark-text);">
+      <%= item.description %>
+    </p>
+  </div>
 </div>

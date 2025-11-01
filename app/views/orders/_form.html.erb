@@ -1,8 +1,8 @@
 <%= form_with(model: order) do |form| %>
   <% if order.errors.any? %>
-    <div style="color: red">
+    <div class="alert alert-danger">
       <h2><%= pluralize(order.errors.count, "error") %> prohibited this order from being saved:</h2>
-      <ul>
+      <ul class="mb-0">
         <% order.errors.each do |error| %>
           <li><%= error.full_message %></li>
         <% end %>
@@ -20,43 +20,101 @@
         <%= form.select(:status_order, [['NEW',0], ['PAID',1], ['CANCELED',2]], {selected: order.status_order},  {class: "form-control"}) %>
       </div>
     <% end %>
-    <div>
-      <p class="mt-3 mb-0" >List Menus</p>
+    <div class="menu-selection-section">
+      <h3 class="section-title">List Menus</h3>
       <% if @item_orders %>
-        <p class="m-t-10 fw-bold" style="color:green;">Ordered Menu</p>
-        <% @item_orders.each do |item| %>
-          <div class="form-check m-t-10">
-            <input class="form-check-input" type="checkbox" id="<%= item.name %>" name="item[]" value="<%= item.id %>" checked>
-            <label class="form-check-label" for="<%= item.name %>"><%= item.name %> - Rp.<%= item.price %>/portion</label>
-            <input class="form-control" type="number" name="quantity_<%= item.id %>" placeholder="how many do you order ?" value="<%= item.quantity %>">
-            <small>fill quantity with 0 if order was canceled</small>
+        <div class="menu-section-group">
+          <h4 class="menu-section-title ordered">📋 Ordered Menu</h4>
+          <div class="menu-items-grid">
+            <% @item_orders.each do |item| %>
+              <% item_obj = Item.find_by(id: item.id) %>
+              <div class="menu-item-card">
+                <div class="menu-item-header">
+                  <input class="form-check-input menu-checkbox" type="checkbox" id="ordered_item_<%= item.id %>" name="item[]" value="<%= item.id %>" checked>
+                  <label class="menu-item-label" for="ordered_item_<%= item.id %>">
+                    <span class="menu-item-name"><%= item.name %></span>
+                    <span class="menu-item-price">Rp.<%= item.price %>/portion</span>
+                  </label>
+                  <% if item_obj %>
+                    <span class="badge <%= item_obj.stock.to_i > 0 ? 'bg-success' : 'bg-danger' %> menu-stock-badge">Stock: <%= item_obj.stock.to_i %></span>
+                  <% end %>
+                </div>
+                <div class="menu-item-body">
+                  <input class="form-control menu-quantity-input" type="number" name="quantity_<%= item.id %>" placeholder="How many do you order?" value="<%= item.quantity %>" min="0" max="<%= item_obj ? (item_obj.stock.to_i + item.quantity.to_i) : item.quantity.to_i %>">
+                  <small class="menu-help-text">Fill quantity with 0 if order was canceled</small>
+                </div>
+              </div>
+            <% end %>
           </div>
-        <% end %>
+        </div>
         <% if !@notyet_item_orders.empty? %>
-          <p class="m-t-10 fw-bold" style="color:red;" >Unordered Menu</p>
-          <% @notyet_item_orders.each do |id, name, price| %>
-            <div class="form-check m-t-10">
-              <input class="form-check-input" type="checkbox" id="<%= name %>" name="item[]" value="<%= id %>">
-              <label class="form-check-label" for="<%= name %>"><%= name %> - Rp.<%= price %>/portion</label>
-              <input class="form-control" type="number" name="quantity_<%= id %>" placeholder="how many do you order ?">
-              <small>checklist and fill quantity if you choose this</small>
+          <div class="menu-section-group mt-4">
+            <h4 class="menu-section-title unordered">📝 Unordered Menu</h4>
+            <div class="menu-items-grid">
+              <% @notyet_item_orders.each do |id, name, price| %>
+                <% item_obj = Item.find_by(id: id) %>
+                <div class="menu-item-card <%= 'menu-item-disabled' if item_obj && item_obj.stock.to_i == 0 %>">
+                  <div class="menu-item-header">
+                    <input class="form-check-input menu-checkbox" type="checkbox" id="unordered_item_<%= id %>" name="item[]" value="<%= id %>" <%= 'disabled' if item_obj && item_obj.stock.to_i == 0 %>>
+                    <label class="menu-item-label" for="unordered_item_<%= id %>">
+                      <span class="menu-item-name"><%= name %></span>
+                      <span class="menu-item-price">Rp.<%= price %>/portion</span>
+                    </label>
+                    <% if item_obj %>
+                      <span class="badge <%= item_obj.stock.to_i > 0 ? 'bg-success' : 'bg-danger' %> menu-stock-badge">Stock: <%= item_obj.stock.to_i %></span>
+                    <% end %>
+                    <% if item_obj && item_obj.stock.to_i == 0 %>
+                      <span class="badge bg-danger ms-2">Out of Stock</span>
+                    <% end %>
+                  </div>
+                  <div class="menu-item-body">
+                    <input class="form-control menu-quantity-input" type="number" name="quantity_<%= id %>" placeholder="How many do you order?" min="1" max="<%= item_obj ? item_obj.stock.to_i : 0 %>" <%= 'disabled' if item_obj && item_obj.stock.to_i == 0 %>>
+                    <small class="menu-help-text">
+                      <% if item_obj && item_obj.stock.to_i == 0 %>
+                        <span class="text-danger">This item is out of stock</span>
+                      <% else %>
+                        Checklist and fill quantity if you choose this<% if item_obj %> (Max: <%= item_obj.stock.to_i %>)<% end %>
+                      <% end %>
+                    </small>
+                  </div>
+                </div>
+              <% end %>
             </div>
-          <% end %>
+          </div>
         <% end %>
       <% else %>
-        <% @items.each do |item| %>
-          <div class="form-check m-t-10">
-            <input class="form-check-input" type="checkbox" id="<%= item.name %>" name="item[]" value="<%= item.id %>">
-            <label class="form-check-label" for="<%= item.name %>"><%= item.name %> - Rp.<%= item.price %>/portion</label>
-            <input class="form-control" type="number" name="quantity_<%= item.id %>" placeholder="how many do you order ?">
-            <small>checklist and fill quantity if you choose this</small>
-          </div>
-        <% end %>
+        <div class="menu-items-grid">
+          <% @items.each do |item| %>
+            <div class="menu-item-card <%= 'menu-item-disabled' if item.stock.to_i == 0 %>">
+              <div class="menu-item-header">
+                <input class="form-check-input menu-checkbox" type="checkbox" id="item_<%= item.id %>" name="item[]" value="<%= item.id %>" <%= 'disabled' if item.stock.to_i == 0 %>>
+                <label class="menu-item-label" for="item_<%= item.id %>">
+                  <span class="menu-item-name"><%= item.name %></span>
+                  <span class="menu-item-price">Rp.<%= item.price %>/portion</span>
+                </label>
+                <span class="badge <%= item.stock.to_i > 0 ? 'bg-success' : 'bg-danger' %> menu-stock-badge">Stock: <%= item.stock.to_i %></span>
+                <% if item.stock.to_i == 0 %>
+                  <span class="badge bg-danger ms-2">Out of Stock</span>
+                <% end %>
+              </div>
+              <div class="menu-item-body">
+                <input class="form-control menu-quantity-input" type="number" name="quantity_<%= item.id %>" placeholder="How many do you order?" min="1" max="<%= item.stock.to_i %>" <%= 'disabled' if item.stock.to_i == 0 %>>
+                <small class="menu-help-text">
+                  <% if item.stock.to_i == 0 %>
+                    <span class="text-danger">This item is out of stock</span>
+                  <% else %>
+                    Checklist and fill quantity if you choose this (Max: <%= item.stock.to_i %>)
+                  <% end %>
+                </small>
+              </div>
+            </div>
+          <% end %>
+        </div>
       <% end %>
     </div>
-    <div class="mt-4">
+    <div class="mt-4 d-flex flex-column flex-sm-row gap-2">
       <%= form.submit 'Save', :class => 'btn btn-success'%>
-      <%= link_to "Back to orders", orders_path, {class: "btn btn-secondary ms-2"} %>
+      <%= link_to "Back to orders", orders_path, {class: "btn btn-secondary"} %>
     </div>
   <% end %>
 <% end %>

@@ -1,42 +1,31 @@
-<% content_for :title, "Catering Gigih App | Dashboard" %>
-<nav class="navbar navbar-expand-lg navbar-light m-t-30">
-  <img src="<%= image_url('logo-food-app.png') %>" alt="Logo Restaurant App" height="77" class="d-inline-block align-text-top">
-  <a class="navbar-brand ms-3" href="#">
-    Catering Gigih App
-  </a>
-  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-    <div class="navbar-nav ms-auto">
-      <a class="nav-item nav-link" href="/orders">List Order</a>
-      <a class="nav-item nav-link" href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#exampleModal">About Us</a>
-      <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content bg-warning">
-            <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">Warning !</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              This feature is not yet available. Please use other features
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</nav>
+<% content_for :title, "Catering App | Dashboard" %>
+
 <main class="m-t-30">
   <article>
-    <div class="row justify-content-center">
-      <div class="col-sm-7 ps-4 ps-clear">
-        <img src="<%= image_url('restaurant-img.png') %>" alt="food-img" width="580">
+    <div class="row justify-content-center align-items-center">
+      <div class="col-sm-12 col-md-7 ps-md-4 ps-clear">
+        <img src="<%= image_url('restaurant-img.png') %>" alt="food-img" class="img-fluid" style="max-width: 100%; height: auto;">
       </div>
-      <div class="col-sm-5 mt-5">
-        <h1 class=" mt-5">Catering Gigih App</h1>
-        <p class="mt-3">The Catering Gigih App is a website-based application that provides various types of food ranging from main dishes and desserts, as well as various types of drinks. With the slogan "our satisfaction depends on your satiety" makes our service always try to satisfy you. So please take a look at our menu first by clicking the button below.</p>
-        <div><a class="btn btn-lg btn-cus" href="/items">Show Menu</a></div>
+      <div class="col-sm-12 col-md-5 d-flex flex-column justify-content-center">
+        <div class="brand-header">
+          <a href="/" class="brand-link">
+            <div class="brand-logo-wrapper">
+              <img src="<%= image_url('logo-food-app.png') %>" alt="Logo Restaurant App" class="brand-logo">
+            </div>
+            <span class="brand-name">Catering App</span>
+          </a>
+        </div>
+        <h1 >Welcome to Catering</h1>
+        <p class="mb-4 lead">Discover delicious meals, refreshing drinks, and delightful desserts. We serve quality food with passion. Order now and experience the difference!</p>
+        <p class="mb-4"><strong>Our Promise:</strong> Your satisfaction depends on your satiety</p>
+        <div class="mt-4 d-flex flex-column flex-sm-row gap-2">
+          <a class="btn btn-lg btn-cus" href="/items">
+            📋 Browse Our Menu
+          </a>
+          <a class="btn btn-lg btn-outline-secondary" href="/orders">
+            🛒 View Orders
+          </a>
+        </div>
       </div>
     </div>
   </article>

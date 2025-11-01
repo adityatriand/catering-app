@@ -1,25 +1,37 @@
 <p style="color: green"><%= notice %></p>
-<h1>Item Menus</h1>
-<div class="mt-3">
-  <%= link_to "Dashboard", '/',  {class: "btn btn-secondary"} %>
-  <%= link_to "New item", new_item_path,  {class: "btn btn-success"} %>
-</div>
-<div id="items">
-  <div class="row">
-    <% @items.each do |item| %>
-      <div class="col-sm-4 mt-5">
-        <div class="card">
-          <div class="card-header">
-            Item Name : <%= item.name.capitalize %>
-          </div>
-          <div class="card-body">
-            <%= render item %>
-          </div>
-          <div class="card-footer text-end">
-            <%= link_to "Show this item", item,  {class: "btn card-button"} %>
-          </div>
-        </div>
-      </div>
-    <% end %>
+<div class="page-header mb-4">
+  <div class="page-header-content">
+    <h1 class="page-title">Our Menu</h1>
+    <div class="page-actions">
+      <%= link_to "🏠 Home", '/',  {class: "btn btn-secondary"} %>
+      <%= link_to "+ New Item", new_item_path,  {class: "btn btn-success"} %>
+    </div>
   </div>
 </div>
+<% if @items.any? %>
+  <div id="items">
+    <div class="row">
+      <% @items.each do |item| %>
+        <div class="col-12 col-sm-6 col-md-4 mb-4">
+          <div class="card h-100">
+            <div class="card-header">
+              <h5 class="mb-0"><%= item.name.capitalize %></h5>
+            </div>
+            <div class="card-body d-flex flex-column">
+              <%= render item %>
+              <div class="mt-auto pt-3">
+                <%= link_to "View Details & Order", item,  {class: "btn card-button w-100"} %>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% else %>
+  <div class="alert alert-info text-center">
+    <h4>No items available yet</h4>
+    <p>Start by adding your first menu item!</p>
+    <%= link_to "Add First Item", new_item_path, {class: "btn btn-success"} %>
+  </div>
+<% end %>
