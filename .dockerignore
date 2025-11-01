@@ -1,0 +1,56 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+README.md
+*.md
+
+# Logs
+log/*
+tmp/*
+*.log
+
+# Database
+*.sqlite3
+*.sqlite3-journal
+*.sqlite3-*
+
+# Node modules (if any)
+node_modules/
+
+# Test files
+spec/
+test/
+
+# Coverage
+coverage/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Build artifacts
+tmp/cache/
+tmp/pids/
+tmp/sockets/
+
+# Storage (if using Active Storage)
+storage/
+
+# Assets readme images (not needed in container)
+assets_readme/
+
