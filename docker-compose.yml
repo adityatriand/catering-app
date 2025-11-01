@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - bundle_data:/usr/local/bundle
+      - db_data:/app/db
+    environment:
+      - RAILS_ENV=development
+      - RAILS_MAX_THREADS=5
+    stdin_open: true
+    tty: true
+    command: >
+      sh -c "
+        chmod +x bin/* 2>/dev/null || true &&
+        bundle install &&
+        bundle exec rails db:create &&
+        bundle exec rails db:migrate &&
+        bundle exec rails db:seed &&
+        bundle exec rails server -b 0.0.0.0
+      "
+
+volumes:
+  bundle_data:
+  db_data:
+
