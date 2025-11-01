@@ -1,4 +1,4 @@
-# Catering Gigih App
+# Catering App
 
 A web-based catering management application designed to help restaurant owners manage their menu items, track orders, and monitor inventory efficiently. The application provides a clean, modern interface that makes it easy to handle daily catering operations.
 
